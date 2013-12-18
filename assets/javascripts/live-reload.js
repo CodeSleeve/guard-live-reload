@@ -1,5 +1,7 @@
 // (function(ctx)
 // {
+ 	var ws = null;
+
 	function onMessage(evt) 
 	{ 
 		var received_msg = evt.data;
@@ -15,7 +17,7 @@
 
 	function onClose()
 	{
-		console.log('hmm, closed');
+		startPolling();
 	}
 
 	function startPolling()
@@ -52,7 +54,7 @@
 	{
 	  if ("WebSocket" in window)
 	  {
-	     var ws = new WebSocket("ws://localhost:8000/watcher-live-reload/ws");
+	     ws = new WebSocket("ws://localhost:8000/watcher-live-reload/ws");
 
 	     ws.onopen = onOpen;
 	     ws.onmessage = onMessage;
