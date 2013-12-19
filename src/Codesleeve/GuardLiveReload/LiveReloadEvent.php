@@ -1,4 +1,4 @@
-<?php namespace Codesleeve\WatcherLiveReload;
+<?php namespace Codesleeve\GuardLiveReload;
 
 use DateTime;
 

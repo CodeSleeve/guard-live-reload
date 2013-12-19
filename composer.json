@@ -1,6 +1,6 @@
 {
-    "name": "codesleeve/watcher-live-reload",
-    "description": "Handle live reloads with asset pipeline and watcher combination",
+    "name": "codesleeve/guard-live-reload",
+    "description": "Handle live reloads with codesleeve/guard",
     "license": "MIT",
     "authors": [
         {
@@ -14,10 +14,9 @@
     },
     "autoload": {
         "classmap": [
-            "src/controllers"
         ],
         "psr-0": {
-            "Codesleeve\\WatcherLiveReload\\": "src/"
+            "Codesleeve\\GuardLiveReload\\": "src/"
         }
     },
     "minimum-stability": "dev"
