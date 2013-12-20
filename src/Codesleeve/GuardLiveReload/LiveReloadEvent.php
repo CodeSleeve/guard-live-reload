@@ -5,14 +5,28 @@ use Codesleeve\Guard\Events\EventInterface;
 class LiveReloadEvent implements EventInterface
 {
 	/**
-	 * We have started the watcher... 
+	 * Port that live reload web sockets server runs on
+	 * 
+	 * @var integer
+	 */
+	public $port = 35729;
+
+	/**
+	 * We have started guard... so let's start the web sockets server
 	 * 
 	 * @param  [type] $guard [description]
 	 * @return [type]          [description]
 	 */
 	public function start($guard)
 	{
-		$this->watcher = $guard;
+		// $this->guard = $guard;
+
+		// $this->liveReload = new LiveReloadServer;
+
+		// $this->app = new Ratchet\App('localhost', $this->port);
+		// $this->app->route('/livereload', $this->liveReload);
+		// // $this->app->route('/echo', new Ratchet\Server\EchoServer, array('*'));
+		// $this->app->run();		
 	}
 
 	/**
@@ -22,7 +36,7 @@ class LiveReloadEvent implements EventInterface
 	 */
 	public function stop()
 	{
-
+		// $this->app
 	}
 
 	/**
