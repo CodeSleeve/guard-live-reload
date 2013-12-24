@@ -8,7 +8,7 @@ class LiveReloadServer
 			'host' => '127.0.0.1',
 			'port' => 35729,
 			'timeout' => 2,
-			'watch' => realpath(rtrim(sys_get_temp_dir(), '/') . '/guard-reload'),
+			'watch' => rtrim(sys_get_temp_dir(), '/') . '/guard-reload',
 			'routes' => array(
 				array('/livereload', new Protocols\LiveReloadProtocol, array("*")),
 				array('/livereload.js', new Protocols\HttpFileProtocol, array("*")),

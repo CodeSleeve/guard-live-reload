@@ -1,5 +1,6 @@
 <?php namespace Codesleeve\GuardLiveReload;
 
+use DateTime;
 use Symfony\Component\Process\Process;
 use Codesleeve\Guard\Events\EventInterface;
 
@@ -39,8 +40,7 @@ class LiveReloadEvent implements EventInterface
 	public function listen($event)
 	{
 		$date = new DateTime;
-		$filename = realpath(rtrim(sys_get_temp_dir(), '/') . '/guard-reload');
-
+		$filename = rtrim(sys_get_temp_dir(), '/') . '/guard-reload';
 		file_put_contents($filename, $date->format(DateTime::ISO8601));
 	}
 

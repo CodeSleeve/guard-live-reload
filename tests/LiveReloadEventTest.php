@@ -13,9 +13,9 @@ class LiveReloadEventTest extends \PHPUnit_Framework_TestCase
 		$this->event->stop();
 	}
 
-	public function testConstruction()
+	public function testListen()
 	{
-		// if we even make it here, we've constructed!
+		$this->event->listen(null);
 	}
 
 }
