@@ -8,10 +8,22 @@
             "email": "kelt@codesleeve.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/Devristo/phpws"
+        }
+    ],
     "require": {
         "php": ">=5.3.9",
         "illuminate/support": "4.*",
-        "codesleeve/guard": "dev-master"
+        "codesleeve/guard": "dev-master",
+        "symfony/process": "2.5.*@dev",
+        "cboden/ratchet": "dev-master",
+        "react/react": "0.3.*"
+    },
+    "require-dev": {
+	"devristo/phpws": "dev-master"
     },
     "autoload": {
         "classmap": [

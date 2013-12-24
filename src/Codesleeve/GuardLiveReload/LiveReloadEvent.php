@@ -1,16 +1,10 @@
 <?php namespace Codesleeve\GuardLiveReload;
 
+use Symfony\Component\Process\Process;
 use Codesleeve\Guard\Events\EventInterface;
 
 class LiveReloadEvent implements EventInterface
 {
-	/**
-	 * Port that live reload web sockets server runs on
-	 * 
-	 * @var integer
-	 */
-	public $port = 35729;
-
 	/**
 	 * We have started guard... so let's start the web sockets server
 	 * 
@@ -19,14 +13,11 @@ class LiveReloadEvent implements EventInterface
 	 */
 	public function start($guard)
 	{
-		// $this->guard = $guard;
+		$this->guard = $guard;
 
-		// $this->liveReload = new LiveReloadServer;
+		$server = realpath(__DIR__ . '/../../../server.php');
 
-		// $this->app = new Ratchet\App('localhost', $this->port);
-		// $this->app->route('/livereload', $this->liveReload);
-		// // $this->app->route('/echo', new Ratchet\Server\EchoServer, array('*'));
-		// $this->app->run();		
+		$this->startInBackground("php {$server}");
 	}
 
 	/**
@@ -36,7 +27,7 @@ class LiveReloadEvent implements EventInterface
 	 */
 	public function stop()
 	{
-		// $this->app
+		$this->stopInBackground();
 	}
 
 	/**
@@ -47,8 +38,48 @@ class LiveReloadEvent implements EventInterface
 	 */
 	public function listen($event)
 	{
-	 	// 	$date = new DateTime;
-		// file_put_contents(storage_path() . '/reload_trigger_file', $date->format(DateTime::ISO8601));
-		// 
+		$date = new DateTime;
+		$filename = realpath(rtrim(sys_get_temp_dir(), '/') . '/guard-reload');
+
+		file_put_contents($filename, $date->format(DateTime::ISO8601));
+	}
+
+	/**
+	 * Execute this command in background
+	 * 
+	 * @param  string $cmd
+	 * @return void
+	 */
+	private function startInBackground($cmd)
+	{
+		if (substr(php_uname(), 0, 7) == "Windows")
+		{
+			$cmd = "start /B ". $cmd;
+		}
+		else
+		{
+			$cmd .= " > /dev/null &";		
+		}
+
+		$desc = array(
+		    0 => array('pipe', 'r'),
+		    1 => array('pipe', 'w'),
+		    2 => array('pipe', 'w')
+		);
+
+		$this->process = proc_open($cmd, $desc, $pipes);
+	}
+
+	/**
+	 * Stop this process in background
+	 * 
+	 * @return void
+	 */
+	private function stopInBackground()
+	{
+		$s = proc_get_status($this->process);
+
+		posix_kill($s['pid'], SIGKILL);
+		proc_close($this->process);
 	}
 }
