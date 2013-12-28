@@ -63,8 +63,8 @@ class LiveReloadEvent implements EventInterface
 
 		$desc = array(
 		    0 => array('pipe', 'r'),
-		    1 => array('pipe', 'w'),
-		    2 => array('pipe', 'w')
+		    1 => array('file', rtrim(sys_get_temp_dir(), '/') . '/codesleeve-guard-live-reload.log', 'a'),
+		    2 => array('file', rtrim(sys_get_temp_dir(), '/') . '/codesleeve-guard-live-reload.err', 'a'),
 		);
 
 		$this->process = proc_open($cmd, $desc, $pipes);
