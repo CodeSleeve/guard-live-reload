@@ -4,14 +4,18 @@ class LiveReloadServer
 {
 	public function __construct($config = array())
 	{
+		$livereload = new Protocols\LiveReloadProtocol;
+
 		$this->config = array_merge(array(
 			'host' => '127.0.0.1',
 			'port' => 35729,
 			'timeout' => 2,
+			'livereload' => $livereload,
 			'watch' => rtrim(sys_get_temp_dir(), '/') . '/guard-reload',
 			'routes' => array(
-				array('/livereload', new Protocols\LiveReloadProtocol, array("*")),
+				array('/livereload', $livereload, array("*")),
 				array('/livereload.js', new Protocols\HttpFileProtocol, array("*")),
+				array('/command', new Protocols\CommandProtocol($livereload), array('*')),
 			),
 		), $config);
 	}
@@ -33,7 +37,7 @@ class LiveReloadServer
 			call_user_func_array(array($app, 'route'), $route);
 		}
 
-		$loop->addTimer($config['timeout'], array($this, 'guard'));
+		$loop->addTimer($config['timeout'], array($this, 'watchTempFile'));
 		$app->run();		
 	}
 
@@ -45,17 +49,16 @@ class LiveReloadServer
 	 * @param  [type] $timer [description]
 	 * @return [type]        [description]
 	 */
-	public function guard($timer)
+	public function watchTempFile($timer)
 	{
 		$config = $this->config;
 
 		if (file_exists($config['watch']))
 		{
-			$files = file($config['watch'], FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-			$config['routes'][0][1]->reloadCommand($files);
+			$config['livereload']->reloadCommand();
 			unlink($config['watch']);
 		}
 
-		$timer->getLoop()->addTimer($config['timeout'], array($this, 'guard'));
+		$timer->getLoop()->addTimer($config['timeout'], array($this, 'watchTempFile'));
 	}
 }

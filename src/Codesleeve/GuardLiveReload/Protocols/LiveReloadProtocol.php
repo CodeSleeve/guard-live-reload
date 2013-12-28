@@ -128,7 +128,7 @@ class LiveReloadProtocol implements MessageComponentInterface
      * @param  ConnectionInterface $conn [description]
      * @return [type]                    [description]
      */
-    public function reloadCommand($files)
+    public function reloadCommand()
     {
         $command = '{"command": "reload", "path":"/some/fake/path/i/guess", "liveCSS": false}';
 
