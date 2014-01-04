@@ -5,17 +5,20 @@ class LiveReloadServer
 	public function __construct($config = array())
 	{
 		$livereload = new Protocols\LiveReloadProtocol;
+		$command = new Protocols\CommandProtocol($livereload);
 
 		$this->config = array_merge(array(
 			'host' => '127.0.0.1',
 			'port' => 35729,
 			'timeout' => 2,
 			'livereload' => $livereload,
-			'watch' => rtrim(sys_get_temp_dir(), '/') . '/guard-reload',
+			'command' => $command,
+			'reload_cmd_file' => rtrim(sys_get_temp_dir(), '/') . '/codesleeve-guard-livereload-reload',
+			'shutdown_cmd_file' => rtrim(sys_get_temp_dir(), '/') . '/codesleeve-guard-livereload-shutdown',
 			'routes' => array(
 				array('/livereload', $livereload, array("*")),
 				array('/livereload.js', new Protocols\HttpFileProtocol, array("*")),
-				array('/command', new Protocols\CommandProtocol($livereload), array('*')),
+				array('/command', $command, array('*')),
 			),
 		), $config);
 	}
@@ -41,6 +44,11 @@ class LiveReloadServer
 		$app->run();		
 	}
 
+	public function stop($loop)
+	{
+		print 'Received shutdown command, stopping application.' . PHP_EOL;
+		$loop->stop();
+	}
 	/**
 	 * Go look to see if a file exists about refreshing
 	 * the page and if so we will send a reloadCommand to
@@ -53,10 +61,17 @@ class LiveReloadServer
 	{
 		$config = $this->config;
 
-		if (file_exists($config['watch']))
+		if (file_exists($file = $config['reload_cmd_file']))
 		{
 			$config['livereload']->reloadCommand();
-			unlink($config['watch']);
+			unlink($file);
+		}
+
+		if (file_exists($file = $config['shutdown_cmd_file']))
+		{
+			$this->stop($timer->getLoop());
+			unlink($file);
+			return;
 		}
 
 		$timer->getLoop()->addTimer($config['timeout'], array($this, 'watchTempFile'));

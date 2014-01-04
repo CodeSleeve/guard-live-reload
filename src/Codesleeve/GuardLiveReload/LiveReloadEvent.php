@@ -1,6 +1,5 @@
 <?php namespace Codesleeve\GuardLiveReload;
 
-use DateTime;
 use Symfony\Component\Process\Process;
 use Codesleeve\Guard\Events\EventInterface;
 
@@ -16,6 +15,10 @@ class LiveReloadEvent implements EventInterface
 	{
 		$this->guard = $guard;
 
+		$this->reloadCmd = rtrim(sys_get_temp_dir(), '/') . '/codesleeve-guard-livereload-reload';
+
+		$this->shutdownCmd = rtrim(sys_get_temp_dir(), '/') . '/codesleeve-guard-livereload-shutdown';
+
 		$server = realpath(__DIR__ . '/../../../server.php');
 
 		$this->startInBackground("php {$server}");
@@ -28,7 +31,7 @@ class LiveReloadEvent implements EventInterface
 	 */
 	public function stop()
 	{
-		$this->stopInBackground();
+		file_put_contents($this->shutdownCmd, 'shutdown');
 	}
 
 	/**
@@ -39,9 +42,7 @@ class LiveReloadEvent implements EventInterface
 	 */
 	public function listen($event)
 	{
-		$date = new DateTime;
-		$filename = rtrim(sys_get_temp_dir(), '/') . '/guard-reload';
-		file_put_contents($filename, $date->format(DateTime::ISO8601));
+		file_put_contents($this->reloadCmd, 'reload');
 	}
 
 	/**
@@ -68,18 +69,5 @@ class LiveReloadEvent implements EventInterface
 		);
 
 		$this->process = proc_open($cmd, $desc, $pipes);
-	}
-
-	/**
-	 * Stop this process in background
-	 * 
-	 * @return void
-	 */
-	private function stopInBackground()
-	{
-		$s = proc_get_status($this->process);
-
-		posix_kill($s['pid'], SIGKILL);
-		proc_close($this->process);
 	}
 }
